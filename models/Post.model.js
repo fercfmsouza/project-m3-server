@@ -21,18 +21,12 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
-    views: [
-      {
-        type: [Schema.Types.ObjectId],
-        ref: 'User',
-      },
-    ],
-    likes: [
-      {
-        type: [Schema.Types.ObjectId],
-        ref: 'User',
-      },
-    ],
+    views: {
+      type: Number,
+    },
+    likes: {
+      type: Number,
+    },
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
