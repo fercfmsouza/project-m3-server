@@ -4,19 +4,17 @@ const { Schema, model } = require('mongoose');
 const postSchema = new Schema(
   {
     owner: {
-      type: [Schema.Types.ObjectId],
+      type: Schema.Types.ObjectId,
       ref: 'User',
     },
     description: {
       type: String,
       required: true,
     },
-    comments: [
-      {
-        type: [Schema.Types.ObjectId],
-        ref: 'Comment',
-      },
-    ],
+    comments: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Comment',
+    },
     image: {
       type: String,
       required: true,
