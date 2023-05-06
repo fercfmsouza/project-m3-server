@@ -21,6 +21,9 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
       description,
       image: req.file.path,
     });
+    
+    await User.findByIdAndUpdate(newPost.owner._id, {$push: {posts: newPost._id}})
+    
 
     await newPost.populate('owner');
 
@@ -32,9 +35,12 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
 });
 
 // all the posts
+// Find User by ID if ID is the same as post.owner._id 
+// then push the post to user.posts array
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find();
+
     res.json(posts);
   } catch (error) {
     console.error(error);
