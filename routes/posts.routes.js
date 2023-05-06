@@ -63,4 +63,18 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+//edit post
+router.put('/:id', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const editPost = await Post.findByIdAndUpdate(id);
+
+    
+    res.json(editPost)
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+})
+
 module.exports = router;

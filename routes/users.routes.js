@@ -6,7 +6,7 @@ const { imageUploader } = require('../config/cloudinary.config');
 
 const router = express.Router();
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const user = req.payload;
 
