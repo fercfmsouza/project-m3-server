@@ -36,8 +36,6 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
 });
 
 // all the posts
-// Find User by ID if ID is the same as post.owner._id
-// then push the post to user.posts array
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find().populate('comments');
@@ -49,6 +47,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// one the post
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -91,12 +90,12 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
 
 //edit post
 router.put('/:id', isAuthenticated, async (req, res) => {
-  const { id, newDescription } = req.params;
- 
+  const { id } = req.params;
+
+  console.log('body', req.body);
+
   try {
-    await Post.findByIdAndUpdate(id, {
-      description: newDescription
-    });
+    await Post.findByIdAndUpdate(id, req.body);
 
     res.sendStatus(200);
   } catch (error) {
