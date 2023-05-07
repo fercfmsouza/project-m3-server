@@ -40,7 +40,7 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
 // then push the post to user.posts array
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find();
+    const posts = await Post.find().populate('comments');
 
     res.json(posts);
   } catch (error) {
@@ -49,12 +49,38 @@ router.get('/', async (req, res) => {
   }
 });
 
-//delete a post
-router.delete('/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    const post = await Post.findById(id).populate({
+      path: 'comments',
+      populate: {
+        path: 'owner',
+        model: 'User',
+      },
+    });
+
+    await post.populate('owner');
+
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+//delete a post
+router.delete('/:id', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const user = req.payload;
+
+  try {
     await Post.findByIdAndDelete(id);
+
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { posts: id },
+    });
 
     res.sendStatus(200);
   } catch (error) {
@@ -69,12 +95,11 @@ router.put('/:id', isAuthenticated, async (req, res) => {
   try {
     const editPost = await Post.findByIdAndUpdate(id);
 
-    
-    res.json(editPost)
+    res.json(editPost);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
   }
-})
+});
 
 module.exports = router;
