@@ -91,11 +91,14 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
 
 //edit post
 router.put('/:id', isAuthenticated, async (req, res) => {
-  const { id } = req.params;
+  const { id, newDescription } = req.params;
+ 
   try {
-    const editPost = await Post.findByIdAndUpdate(id);
+    await Post.findByIdAndUpdate(id, {
+      description: newDescription
+    });
 
-    res.json(editPost);
+    res.sendStatus(200);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
