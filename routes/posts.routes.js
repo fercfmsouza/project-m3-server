@@ -20,7 +20,7 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
       owner: user._id,
       description,
       image: req.file.path,
-      views: 0
+      views: 0,
     });
 
     await User.findByIdAndUpdate(newPost.owner._id, {
@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// one the post
+// one post
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -76,15 +76,15 @@ router.get('/:id', async (req, res) => {
 
   try {
     await Post.findByIdAndUpdate(id, {
-      $inc: { views: 1 }
-    })
+      $inc: { views: 1 },
+    });
 
-    console.log(views)
+    console.log(views);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
   }
-})
+});
 
 //delete a post
 router.delete('/:id', isAuthenticated, async (req, res) => {

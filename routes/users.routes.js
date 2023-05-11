@@ -21,4 +21,19 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   }
 });
 
+router.get('/:id/settings', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const user = req.payload;
+
+  try {
+    const user = await User.findById(id);
+    // await user.populate('posts');
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
 module.exports = router;
