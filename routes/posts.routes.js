@@ -6,6 +6,7 @@ const { imageUploader } = require('../config/cloudinary.config');
 
 const router = express.Router();
 
+//create a post
 router.post('/', isAuthenticated, imageUploader, async (req, res) => {
   const { description } = req.body;
   const user = req.payload;
@@ -36,7 +37,7 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
   }
 });
 
-// all the posts
+// get all the posts
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find().populate('comments');
@@ -48,18 +49,22 @@ router.get('/', async (req, res) => {
   }
 });
 
-// one post
+// get one post
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
     const post = await Post.findById(id).populate({
+      views: 0,
       path: 'comments',
       populate: {
         path: 'owner',
         model: 'User',
       },
     });
+
+    post.views += 1;
+    // await post.save();
 
     await post.populate('owner');
 
@@ -71,20 +76,20 @@ router.get('/:id', async (req, res) => {
 });
 
 //increase views
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
+// router.get('/:id', async (req, res) => {
+//   const { id } = req.params;
 
-  try {
-    await Post.findByIdAndUpdate(id, {
-      $inc: { views: 1 },
-    });
+//   try {
+//     await Post.findByIdAndUpdate(id, {
+//       $inc: { views: 1 },
+//     });
 
-    console.log(views);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
+//     console.log(views);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error);
+//   }
+// });
 
 //delete a post
 router.delete('/:id', isAuthenticated, async (req, res) => {
