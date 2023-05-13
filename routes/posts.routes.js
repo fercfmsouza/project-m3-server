@@ -21,7 +21,6 @@ router.post('/', isAuthenticated, imageUploader, async (req, res) => {
       owner: user._id,
       description,
       image: req.file.path,
-      views: 0,
     });
 
     await User.findByIdAndUpdate(newPost.owner._id, {
@@ -55,16 +54,12 @@ router.get('/:id', async (req, res) => {
 
   try {
     const post = await Post.findById(id).populate({
-      views: 0,
       path: 'comments',
       populate: {
         path: 'owner',
         model: 'User',
       },
     });
-
-    post.views += 1;
-    // await post.save();
 
     await post.populate('owner');
 
@@ -75,8 +70,24 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-//increase views
-// router.get('/:id', async (req, res) => {
+// increase views
+router.put('/:id/views/increment', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await Post.findByIdAndUpdate(id, {
+      $inc: { views: 1 },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+// working likes
+// router.put('/:id/likes', async (req, res) => {
 //   const { id } = req.params;
 
 //   try {
@@ -84,7 +95,7 @@ router.get('/:id', async (req, res) => {
 //       $inc: { views: 1 },
 //     });
 
-//     console.log(views);
+//     res.sendStatus(200);
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).send(error);
