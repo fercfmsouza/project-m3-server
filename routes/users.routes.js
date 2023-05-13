@@ -6,7 +6,7 @@ const { imageUploader } = require('../config/cloudinary.config');
 
 const router = express.Router();
 
-router.get('/:id', isAuthenticated, async (req, res) => {
+router.get('/', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const user = req.payload;
 
@@ -21,14 +21,24 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   }
 });
 
-router.get('/:id/settings', isAuthenticated, async (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const user = req.payload;
 
   try {
     const user = await User.findById(id);
-    // await user.populate('posts');
+    await user.populate('posts');
 
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+router.post('/settings', isAuthenticated, async (req, res) => {
+  const user = req.payload;
+
+  try {
     res.json(user);
   } catch (error) {
     console.error(error);
