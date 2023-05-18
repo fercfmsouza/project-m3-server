@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('../models/User.model');
+const { User, validate } = require('../models/User.model');
 const Post = require('../models/Post.model');
 const { isAuthenticated } = require('../middleware/jwt.middleware.js');
 const { imageUploader } = require('../config/cloudinary.config');
@@ -51,6 +51,21 @@ router.put('/:id', isAuthenticated, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
+  }
+});
+
+//reset password
+router.post("/", async (req, res) => {
+  try {
+      const { error } = validate(req.body);
+      if (error) return res.status(400).send(error.details[0].message);
+
+      const user = await new User(req.body).save();
+
+      res.send(user);
+  } catch (error) {
+      res.send("An error occured");
+      console.log(error);
   }
 });
 

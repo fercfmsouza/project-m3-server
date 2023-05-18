@@ -30,6 +30,9 @@ app.use('/users', usersRoutes);
 const commentsRoutes = require('./routes/comments.routes');
 app.use('/comments', commentsRoutes);
 
+const passwordRoutes = require('./routes/password.routes');
+app.use('/password', passwordRoutes);
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require('./error-handling')(app);
 
