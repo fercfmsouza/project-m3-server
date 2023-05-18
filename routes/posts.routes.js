@@ -87,20 +87,30 @@ router.put('/:id/views/increment', async (req, res) => {
 });
 
 // working likes
-// router.put('/:id/likes', async (req, res) => {
-//   const { id } = req.params;
+router.put('/:id/likes', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const { type } = req.body;
+  const user = req.payload;
 
-//   try {
-//     await Post.findByIdAndUpdate(id, {
-//       $inc: { views: 1 },
-//     });
+  try {
+    if (!type || (type !== 'add' && type !== 'remove'))
+      throw Error('Unsupported type. Should be either: add or remove');
 
-//     res.sendStatus(200);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error);
-//   }
-// });
+    const postOperation = { $inc: { likes: type === 'add' ? 1 : -1 } };
+    const userOperation =
+      type === 'add'
+        ? { $push: { likedPosts: id } }
+        : { $pull: { likedPosts: id } };
+
+    await Post.findByIdAndUpdate(id, postOperation);
+    await User.findByIdAndUpdate(user._id, userOperation);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
 
 //delete a post
 router.delete('/:id', isAuthenticated, async (req, res) => {
