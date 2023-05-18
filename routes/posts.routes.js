@@ -87,20 +87,19 @@ router.put('/:id/views/increment', async (req, res) => {
 });
 
 // working likes
-// router.put('/:id/likes', async (req, res) => {
-//   const { id } = req.params;
+ router.put('/:id/likes', async (req, res) => {
+   const { id } = req.params;
+   const likes = req.body;
 
-//   try {
-//     await Post.findByIdAndUpdate(id, {
-//       $inc: { views: 1 },
-//     });
+   try {
+     await Post.findByIdAndUpdate(id, likes);
 
-//     res.sendStatus(200);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error);
-//   }
-// });
+     res.sendStatus(200);
+   } catch (error) {
+     console.error(error);
+     res.status(500).send(error);
+   }
+ });
 
 //delete a post
 router.delete('/:id', isAuthenticated, async (req, res) => {
