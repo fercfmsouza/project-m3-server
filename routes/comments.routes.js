@@ -42,11 +42,14 @@ router.post('/', isAuthenticated, async (req, res) => {
 });
 
 //delete a comment
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
+router.delete('/:id/posts/:postId', async (req, res) => {
+  const { postId, id } = req.params;
 
   try {
-    await Post.findByIdAndDelete(id);
+    await Comment.findByIdAndDelete(id);
+    await Post.findByIdAndUpdate(postId, { $pull: { comments: id }});
+
+
 
     res.sendStatus(200);
   } catch (error) {
