@@ -22,6 +22,54 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 });
 
 //settings
+router.get('/settings/statistics', isAuthenticated, async (req, res) => {
+  const loggedUser = req.payload;
+
+  try {
+    const allPosts = await Post.find();
+
+    const getAverageViewsAndLikes = () => {
+      const filteredPosts = allPosts.filter(
+        (post) => post.owner.toString() !== loggedUser._id,
+      );
+
+      const myPosts = allPosts.filter(
+        (post) => post.owner.toString() === loggedUser._id,
+      );
+
+      const totalViews = filteredPosts.reduce((previous, current) => {
+        return previous + (current.views || 0);
+      }, 0);
+
+      const totalLikes = filteredPosts.reduce((previous, current) => {
+        return previous + (current.likes || 0);
+      }, 0);
+
+      const userTotalViews = myPosts.reduce((previous, current) => {
+        return previous + (current.views || 0);
+      }, 0);
+
+      const userTotalLikes = myPosts.reduce((previous, current) => {
+        return previous + (current.likes || 0);
+      }, 0);
+
+      return {
+        averageViews: Math.floor(totalViews / filteredPosts.length),
+        averageLikes: Math.floor(totalLikes / filteredPosts.length),
+        userTotalViews,
+        userTotalLikes,
+      };
+    };
+
+    const averageViewsAndLikes = getAverageViewsAndLikes();
+
+    res.json(averageViewsAndLikes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
 router.post('/settings', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const user = req.payload;
@@ -45,9 +93,9 @@ router.put('/:id', isAuthenticated, async (req, res) => {
   console.log('user', req.payload);
 
   try {
-     await User.findByIdAndUpdate(user._id, req.body);
+    await User.findByIdAndUpdate(user._id, req.body);
 
-     res.sendStatus(200);
+    res.sendStatus(200);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
