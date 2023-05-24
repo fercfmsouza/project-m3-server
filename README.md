@@ -136,3 +136,9 @@ app.use(
 - Sign in / Log in from Google
 - Reset the password
 - Edit User info (email and profile image)
+
+## Links
+
+- [Deployed project](https://petssocialmedia.netlify.com)
+- Client repository
+- Slides
