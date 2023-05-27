@@ -13,6 +13,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(id);
     await user.populate('posts');
+    await user.populate('likedPosts');
 
     res.json(user);
   } catch (error) {
@@ -70,15 +71,17 @@ router.get('/settings/statistics', isAuthenticated, async (req, res) => {
   }
 });
 
-router.post('/settings', isAuthenticated, async (req, res) => {
+router.get('/settings/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
-  const user = req.payload;
 
   try {
-    const user = await User.findById(id);
-    await user.populate('posts');
+    const user = await User.findById(id).populate('likedPosts');
 
-    res.json(user);
+    console.log('user', user);
+
+    const likedPosts = user.likedPosts.map(post => post);
+
+    res.json(likedPosts);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
@@ -86,7 +89,7 @@ router.post('/settings', isAuthenticated, async (req, res) => {
 });
 
 // edit user.email
-router.put('/:id', isAuthenticated, async (req, res) => {
+router.put('/edit/:id', isAuthenticated, async (req, res) => {
   const user = req.payload;
 
   console.log('body', req.body);
@@ -94,6 +97,19 @@ router.put('/:id', isAuthenticated, async (req, res) => {
 
   try {
     await User.findByIdAndUpdate(user._id, req.body);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+//delete user
+router.delete('/:id', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await User.findByIdAndDelete(id);
 
     res.sendStatus(200);
   } catch (error) {
